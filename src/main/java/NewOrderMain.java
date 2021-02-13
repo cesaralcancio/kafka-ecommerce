@@ -1,3 +1,4 @@
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -10,17 +11,30 @@ import java.util.concurrent.ExecutionException;
 public class NewOrderMain {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        System.out.println("Hello World");
+        System.out.println("Hello World!!!");
         var producer = new KafkaProducer<String, String>(properties());
-        var record = new ProducerRecord<String, String>("ECOMMERCE_NEW_ORDER", "Chave", "Valor");
-        producer.send(record, (data, ex) -> {
+
+        var topicNewOrder = "ECOMMERCE_NEW_ORDER";
+        var topicSendEmail = "ECOMMERCE_SEND_EMAIL";
+        var value = "13213,65464,8797,123";
+        var emailValue = "Thank you. We are processing your order.";
+
+        var record = new ProducerRecord<String, String>(topicNewOrder, value, value);
+        var emailRecord = new ProducerRecord<String, String>(topicSendEmail, emailValue, emailValue);
+
+        producer.send(record, getCallback()).get();
+        producer.send(emailRecord, getCallback()).get();
+    }
+
+    private static Callback getCallback() {
+        return (data, ex) -> {
             if (ex != null) {
                 System.out.println(ex);
                 return;
             }
             String msg = data.topic() + ":::partition " + data.partition() + "/ offset " + data.offset() + "/ timestamp " + data.timestamp();
-            System.out.println("Sucesso enviado " + msg);
-        }).get();
+            System.out.println("Message sent: " + msg);
+        };
     }
 
     private static Properties properties() {
