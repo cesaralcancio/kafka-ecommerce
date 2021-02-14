@@ -1,5 +1,6 @@
 package br.com.cesar.ecommerce;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -12,18 +13,23 @@ public class NewOrderMain {
         }
     }
 
-    private static void runNewOrder(String v) throws InterruptedException, ExecutionException {
-        try (var dispatcher = new KafkaDispatcher()) {
-            var key = UUID.randomUUID().toString();
+    private static void runNewOrder(String index) throws InterruptedException, ExecutionException {
+        var topicNewOrder = "ECOMMERCE_NEW_ORDER";
+        var topicSendEmail = "ECOMMERCE_SEND_EMAIL";
 
-            var topicNewOrder = "ECOMMERCE_NEW_ORDER";
-            var topicSendEmail = "ECOMMERCE_SEND_EMAIL";
+        try (var orderDispatcher = new KafkaDispatcher<Order>()) {
+            try (var emailDispatcher = new KafkaDispatcher<Email>()) {
+                var emailValue = "Thank you. We are processing your order: " + index;
+                var email = new Email(emailValue, emailValue);
 
-            var value = key + ",13213,65464,8797,123: " + v;
-            var emailValue = "Thank you. We are processing your order: " + v;
+                var userId = UUID.randomUUID().toString();
+                var orderId = UUID.randomUUID().toString();
+                var amount = new BigDecimal(Math.random() * 5000 + 1);
+                Order order = new Order(index, userId, orderId, amount);
 
-            dispatcher.send(topicNewOrder, key, value);
-            dispatcher.send(topicSendEmail, key, emailValue);
+                orderDispatcher.send(topicNewOrder, userId, order);
+                emailDispatcher.send(topicSendEmail, userId, email);
+            }
         }
     }
 }

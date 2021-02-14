@@ -7,14 +7,15 @@ public class FraudDetectorService {
     public static void main(String[] args) {
         var topic = "ECOMMERCE_NEW_ORDER";
         var fraudDetectorService = new FraudDetectorService();
-        try (var service = new KafkaService(FraudDetectorService.class.getSimpleName(),
+        try (var service = new KafkaService<>(FraudDetectorService.class.getSimpleName(),
                 topic,
-                fraudDetectorService::parse)) {
+                fraudDetectorService::parse,
+                Order.class)) {
             service.run();
         }
     }
 
-    private void parse(ConsumerRecord<String, String> record) {
+    private void parse(ConsumerRecord<String, Order> record) {
         System.out.println("Processing new order, checking for fraud.");
         System.out.println(record.key());
         System.out.println(record.value());
@@ -22,7 +23,7 @@ public class FraudDetectorService {
         System.out.println(record.offset());
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

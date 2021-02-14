@@ -1,49 +1,40 @@
 package br.com.cesar.ecommerce;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-import java.time.Duration;
-import java.util.Properties;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class LogService {
 
     public static void main(String[] args) {
-        var consumer = new KafkaConsumer<String, String>(properties());
-        consumer.subscribe(Pattern.compile("ECOMMERCE.*"));
+        var logService = new LogService();
+        var topic = Pattern.compile("ECOMMERCE.*");
+        System.out.println("Reading type: " + String.class.getName());
 
-        while (true) {
-            var records = consumer.poll(Duration.ofMillis(100));
-            if (!records.isEmpty()) {
-                System.out.println("Found " + records.count() + " records.");
-                for (var record : records) {
-                    System.out.println("-------------------------------------------------------------");
-                    System.out.println("Logging.");
-                    System.out.println(record.topic());
-                    System.out.println(record.key());
-                    System.out.println(record.value());
-                    System.out.println(record.partition());
-                    System.out.println(record.offset());
-
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+        try (var service = new KafkaService(LogService.class.getSimpleName(),
+                topic,
+                logService::parse,
+                String.class,
+                Map.of(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName()))) {
+            service.run();
         }
     }
 
-    private static Properties properties() {
-        var properties = new Properties();
+    private void parse(ConsumerRecord<String, String> record) {
+        System.out.println("Logging...");
+        System.out.println(record.topic());
+        System.out.println(record.key());
+        System.out.println(record.value());
+        System.out.println(record.partition());
+        System.out.println(record.offset());
 
-        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, LogService.class.getSimpleName());
-        return properties;
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

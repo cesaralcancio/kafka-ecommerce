@@ -10,7 +10,8 @@ public class EmailService {
 
         try (var service = new KafkaService(EmailService.class.getSimpleName(),
                 topic,
-                emailService::parse)) {
+                emailService::parse,
+                String.class)) {
             service.run();
         }
     }
