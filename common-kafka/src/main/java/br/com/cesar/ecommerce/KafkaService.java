@@ -45,9 +45,9 @@ class KafkaService<T> implements Closeable {
         while (true) {
             var records = consumer.poll(Duration.ofMillis(100));
             if (!records.isEmpty()) {
+                System.out.println("|---------------------------------------|");
                 System.out.println("Found " + records.count() + " records.");
                 for (var record : records) {
-                    System.out.println("|---------------------------------------|");
                     parse.consume(record);
                 }
             }

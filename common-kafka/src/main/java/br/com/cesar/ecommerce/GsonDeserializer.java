@@ -24,9 +24,6 @@ public class GsonDeserializer<T> implements Deserializer<T> {
 
     @Override
     public T deserialize(String s, byte[] bytes) {
-        System.out.println(s);
-        System.out.println(new String(bytes));
-        System.out.println(type);
         return gson.fromJson(new String(bytes), type);
     }
 }

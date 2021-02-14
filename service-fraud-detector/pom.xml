@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>service-email</artifactId>
+    <artifactId>service-fraud-detector</artifactId>
     <dependencies>
         <dependency>
             <groupId>br.com.cesar</groupId>
