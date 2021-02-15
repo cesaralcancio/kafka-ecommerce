@@ -13,8 +13,4 @@ public class Order {
         this.orderId = orderId;
         this.amount = amount;
     }
-
-    public String getUserId() {
-        return userId;
-    }
 }

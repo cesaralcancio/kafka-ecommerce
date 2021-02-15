@@ -10,7 +10,7 @@ import java.io.Closeable;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
-public class KafkaDispatcher<T> implements Closeable {
+class KafkaDispatcher<T> implements Closeable {
 
     private final KafkaProducer<String, T> producer;
 
