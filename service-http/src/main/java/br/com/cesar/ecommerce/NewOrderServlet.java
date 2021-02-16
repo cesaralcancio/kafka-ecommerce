@@ -18,14 +18,17 @@ public class NewOrderServlet extends HttpServlet {
 
         try (var orderDispatcher = new KafkaDispatcher<Order>()) {
             try (var emailDispatcher = new KafkaDispatcher<Email>()) {
+                var orderId = UUID.randomUUID().toString();
+                var reqEmail = String.valueOf(req.getParameter("email"));
+                var reqAmount = String.valueOf(req.getParameter("amount"));
+
+                var randomEmail = isNullOrEmpty(reqEmail) ?
+                        Math.random() + "@cesar.com" : reqEmail;
+                var amount = isNullOrEmpty(reqAmount) ?
+                        new BigDecimal(Math.random() * 5000 + 1) : new BigDecimal(reqAmount);
+
                 var emailValue = "Thank you. We are processing your order";
                 var email = new Email(emailValue, emailValue);
-
-
-                var orderId = UUID.randomUUID().toString();
-                var amount = new BigDecimal(Math.random() * 5000 + 1);
-                var randomEmail = Math.random() + "@cesar.com";
-                //var randomEmail = "cesar+1@cesar.com";
 
                 Order order = new Order("1", orderId, randomEmail, amount);
 
@@ -38,8 +41,13 @@ public class NewOrderServlet extends HttpServlet {
                     e.printStackTrace();
                 }
 
+                resp.setStatus(HttpServletResponse.SC_OK);
                 resp.getWriter().println("New order sent: " + order.toString());
             }
         }
+    }
+
+    private boolean isNullOrEmpty(String s) {
+        return s == null || s.isEmpty() || s.isBlank() || s.equals("null");
     }
 }
