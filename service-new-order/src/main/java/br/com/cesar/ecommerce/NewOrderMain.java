@@ -22,13 +22,16 @@ public class NewOrderMain {
                 var emailValue = "Thank you. We are processing your order: " + index;
                 var email = new Email(emailValue, emailValue);
 
-                var userId = UUID.randomUUID().toString();
+
                 var orderId = UUID.randomUUID().toString();
                 var amount = new BigDecimal(Math.random() * 5000 + 1);
-                Order order = new Order(index, userId, orderId, amount);
+                var randomEmail = Math.random() + "@cesar.com";
+                //var randomEmail = "cesar+1@cesar.com";
 
-                orderDispatcher.send(topicNewOrder, userId, order);
-                emailDispatcher.send(topicSendEmail, userId, email);
+                Order order = new Order(index, orderId, randomEmail, amount);
+
+                orderDispatcher.send(topicNewOrder, randomEmail, order);
+                emailDispatcher.send(topicSendEmail, randomEmail, email);
             }
         }
     }
