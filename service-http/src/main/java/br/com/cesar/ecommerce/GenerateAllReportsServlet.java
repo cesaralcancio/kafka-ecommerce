@@ -18,10 +18,10 @@ public class GenerateAllReportsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        var topic = "SEND_MESSAGE_TO_ALL_USERS";
-        var msg = "USER_GENERATE_READING_REPORT";
+        var topic = "ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS";
+        var msg = "ECOMMERCE_USER_GENERATE_READING_REPORT";
         try {
-            batchDispatcher.send(topic, msg, msg);
+            batchDispatcher.send(topic, new CorrelationId(GenerateAllReportsServlet.class.getName()), msg, msg);
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

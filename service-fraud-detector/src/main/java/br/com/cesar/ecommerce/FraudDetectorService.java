@@ -10,17 +10,16 @@ public class FraudDetectorService {
     public static void main(String[] args) {
         var topic = "ECOMMERCE_NEW_ORDER";
         var fraudDetectorService = new FraudDetectorService();
-        try (var service = new KafkaService<>(FraudDetectorService.class.getSimpleName(),
+        try (var service = new KafkaService(FraudDetectorService.class.getSimpleName(),
                 topic,
-                fraudDetectorService::parse,
-                Order.class)) {
+                fraudDetectorService::parse)) {
             service.run();
         }
     }
 
     private KafkaDispatcher<Order> orderKafkaDispatcher = new KafkaDispatcher<>();
 
-    private void parse(ConsumerRecord<String, Order> record) throws ExecutionException, InterruptedException {
+    private void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException {
         System.out.println("Processing new order, checking for fraud.");
         System.out.println(record.key());
         System.out.println(record.value());
@@ -33,13 +32,14 @@ public class FraudDetectorService {
             e.printStackTrace();
         }
 
-        var order = record.value();
+        var message = record.value();
+        var order = message.getPayload();
         if (isFraud(order)) {
             System.out.println("Order is a fraud: " + order);
-            orderKafkaDispatcher.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), order);
+            orderKafkaDispatcher.send("ECOMMERCE_ORDER_REJECTED", message.getCorrelationId().continueWith(FraudDetectorService.class.getName()), order.getEmail(), order);
         } else {
             System.out.println("Approved: " + order);
-            orderKafkaDispatcher.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(), order);
+            orderKafkaDispatcher.send("ECOMMERCE_ORDER_APPROVED", message.getCorrelationId().continueWith(FraudDetectorService.class.getName()), order.getEmail(), order);
         }
 
         System.out.println("Order processed!");

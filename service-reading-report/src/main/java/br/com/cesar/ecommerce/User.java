@@ -9,7 +9,7 @@ public class User {
     }
 
     public String getReportPath() {
-        return "target/" + uuid + "_report.txt";
+        return "service-reading-report/target/" + uuid + "_report.txt";
     }
 
     public String getUuid() {
