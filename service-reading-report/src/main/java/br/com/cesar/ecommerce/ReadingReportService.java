@@ -1,5 +1,6 @@
 package br.com.cesar.ecommerce;
 
+import br.com.cesar.ecommerce.consumer.KafkaService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.io.File;

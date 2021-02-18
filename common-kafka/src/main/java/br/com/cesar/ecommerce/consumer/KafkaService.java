@@ -1,5 +1,7 @@
-package br.com.cesar.ecommerce;
+package br.com.cesar.ecommerce.consumer;
 
+import br.com.cesar.ecommerce.Message;
+import br.com.cesar.ecommerce.dispatcher.KafkaDispatcher;
 import com.google.gson.GsonBuilder;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -14,23 +16,23 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-class KafkaService<T> implements Closeable {
+public class KafkaService<T> implements Closeable {
 
     private final KafkaConsumer<String, Message<T>> consumer;
     private final ConsumerFunction<T> parse;
     private final String groupId;
 
-    KafkaService(String groupId, Pattern topic, ConsumerFunction<T> parse, Map<String, String> properties) {
+    public KafkaService(String groupId, Pattern topic, ConsumerFunction<T> parse, Map<String, String> properties) {
         this(groupId, parse, properties);
         consumer.subscribe(topic);
     }
 
-    KafkaService(String groupId, String topic, ConsumerFunction<T> parse) {
+    public KafkaService(String groupId, String topic, ConsumerFunction<T> parse) {
         this(groupId, parse, Map.of());
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    KafkaService(String groupId, Pattern topic, ConsumerFunction<T> parse) {
+    public KafkaService(String groupId, Pattern topic, ConsumerFunction<T> parse) {
         this(groupId, parse, Map.of());
         consumer.subscribe(topic);
     }
@@ -41,7 +43,7 @@ class KafkaService<T> implements Closeable {
         this.consumer = new KafkaConsumer<>(properties(properties));
     }
 
-    void run() {
+    public void run() {
         while (true) {
             var records = consumer.poll(Duration.ofMillis(100));
             if (!records.isEmpty()) {

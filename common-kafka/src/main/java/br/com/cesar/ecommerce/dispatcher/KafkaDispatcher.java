@@ -1,5 +1,7 @@
-package br.com.cesar.ecommerce;
+package br.com.cesar.ecommerce.dispatcher;
 
+import br.com.cesar.ecommerce.CorrelationId;
+import br.com.cesar.ecommerce.Message;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -11,11 +13,11 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-class KafkaDispatcher<T> implements Closeable {
+public class KafkaDispatcher<T> implements Closeable {
 
     private final KafkaProducer<String, Message<T>> producer;
 
-    KafkaDispatcher() {
+    public KafkaDispatcher() {
         producer = new KafkaProducer<>(properties());
     }
 

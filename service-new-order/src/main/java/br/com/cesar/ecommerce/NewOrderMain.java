@@ -1,5 +1,7 @@
 package br.com.cesar.ecommerce;
 
+import br.com.cesar.ecommerce.dispatcher.KafkaDispatcher;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
