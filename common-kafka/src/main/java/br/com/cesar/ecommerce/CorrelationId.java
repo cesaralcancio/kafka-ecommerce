@@ -12,7 +12,7 @@ public class CorrelationId {
 
 
     public CorrelationId continueWith(String title) {
-        return new CorrelationId(this.id + "-" + title);
+        return new CorrelationId(this.id + "->" + title);
     }
 
     public String getId() {
