@@ -25,7 +25,7 @@ class KafkaDispatcher<T> implements Closeable {
     }
 
     public Future<RecordMetadata> sendAsync(String topic, CorrelationId correlationId, String key, T value) {
-        var message = new Message<T>(correlationId, value);
+        var message = new Message<>(correlationId, value);
         var record = new ProducerRecord<>(topic, key, message);
         return producer.send(record, this::callback);
     }
