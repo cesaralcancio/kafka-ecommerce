@@ -28,7 +28,7 @@ public class BatchSendMessageService {
     public static void main(String[] args) throws SQLException {
         var topic = "ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS";
         var batchSendMessageService = new BatchSendMessageService();
-        try (var service = new KafkaService(CreateUserService.class.getSimpleName(),
+        try (var service = new KafkaService(BatchSendMessageService.class.getSimpleName(),
                 topic,
                 batchSendMessageService::parse)) {
             service.run();
@@ -39,9 +39,10 @@ public class BatchSendMessageService {
 
     private void parse(ConsumerRecord<String, Message<String>> record) throws SQLException {
         System.out.println("Processing new batch...");
+        System.out.println("Topic: " + record.topic());
         System.out.println("Key: " + record.key());
-        System.out.println("Topic: " + record.value());
-        System.out.println("Partition" + record.partition());
+        System.out.println("Value: " + record.value());
+        System.out.println("Partition: " + record.partition());
         System.out.println("Offset: " + record.offset());
         var message = record.value();
         var topic = message.getPayload();
@@ -56,7 +57,7 @@ public class BatchSendMessageService {
             }
         }
 
-        System.out.println("Create new user finished!");
+        System.out.println("batch send message server finished!");
     }
 
     private List<User> findAll() throws SQLException {

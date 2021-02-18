@@ -24,11 +24,11 @@ public class LogService {
 
     private void parse(ConsumerRecord<String, Message<String>> record) {
         System.out.println("Logging...");
-        System.out.println(record.topic());
-        System.out.println(record.key());
-        System.out.println(record.value());
-        System.out.println(record.partition());
-        System.out.println(record.offset());
+        System.out.println("Topic: " + record.topic());
+        System.out.println("Key: " + record.key());
+        System.out.println("Value: " + record.value());
+        System.out.println("Partition: " + record.partition());
+        System.out.println("Offset: " + record.offset());
 
         try {
             Thread.sleep(1000);

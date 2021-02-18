@@ -34,15 +34,15 @@ public class CreateUserService {
         }
     }
 
-    private KafkaDispatcher<Order> orderKafkaDispatcher = new KafkaDispatcher<>();
-
-    private void parse(ConsumerRecord<String, Order> record) throws ExecutionException, InterruptedException, SQLException {
+    private void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException, SQLException {
         System.out.println("Processing new order, checking for new user.");
-        System.out.println(record.key());
-        System.out.println(record.value());
-        System.out.println(record.partition());
-        System.out.println(record.offset());
-        var order = record.value();
+        System.out.println("Topic: " + record.topic());
+        System.out.println("Key: " + record.key());
+        System.out.println("Value: " + record.value());
+        System.out.println("Partition: " + record.partition());
+        System.out.println("Offset: " + record.offset());
+        var message = record.value();
+        var order = message.getPayload();
 
         if (!exists(order.getEmail())) {
             insertNewUser(order.getEmail());
