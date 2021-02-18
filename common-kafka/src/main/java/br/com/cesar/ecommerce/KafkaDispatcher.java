@@ -9,6 +9,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import java.io.Closeable;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 class KafkaDispatcher<T> implements Closeable {
 
@@ -18,10 +19,15 @@ class KafkaDispatcher<T> implements Closeable {
         producer = new KafkaProducer<>(properties());
     }
 
-    public void send(String topic, CorrelationId correlationId, String key, T value) throws ExecutionException, InterruptedException {
+    public RecordMetadata sendAndWait(String topic, CorrelationId correlationId, String key, T value) throws ExecutionException, InterruptedException {
+        Future<RecordMetadata> future = sendAsync(topic, correlationId, key, value);
+        return future.get();
+    }
+
+    public Future<RecordMetadata> sendAsync(String topic, CorrelationId correlationId, String key, T value) {
         var message = new Message<T>(correlationId, value);
         var record = new ProducerRecord<>(topic, key, message);
-        producer.send(record, this::callback).get();
+        return producer.send(record, this::callback);
     }
 
     private void callback(RecordMetadata data, Exception ex) {

@@ -15,6 +15,10 @@ public class CorrelationId {
         return new CorrelationId(this.id + "-" + title);
     }
 
+    public String getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "CorrelationId{" +

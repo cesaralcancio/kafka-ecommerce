@@ -47,14 +47,13 @@ public class BatchSendMessageService {
         var message = record.value();
         var topic = message.getPayload();
 
+        if (true) throw new RuntimeException("Forcei erro");
+
         for (User user : findAll()) {
-            try {
-                userDispatcher.send(topic, message.getCorrelationId().continueWith(BatchSendMessageService.class.getSimpleName()), user.getUuid(), user);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            userDispatcher.sendAsync(topic,
+                    message.getCorrelationId().continueWith(BatchSendMessageService.class.getSimpleName()),
+                    user.getUuid(), user);
+            System.out.println("Enviei para o user " + user);
         }
 
         System.out.println("batch send message server finished!");

@@ -37,10 +37,10 @@ public class FraudDetectorService {
         var order = message.getPayload();
         if (isFraud(order)) {
             System.out.println("Order is a fraud: " + order);
-            orderKafkaDispatcher.send("ECOMMERCE_ORDER_REJECTED", message.getCorrelationId().continueWith(FraudDetectorService.class.getName()), order.getEmail(), order);
+            orderKafkaDispatcher.sendAndWait("ECOMMERCE_ORDER_REJECTED", message.getCorrelationId().continueWith(FraudDetectorService.class.getName()), order.getEmail(), order);
         } else {
             System.out.println("Approved: " + order);
-            orderKafkaDispatcher.send("ECOMMERCE_ORDER_APPROVED", message.getCorrelationId().continueWith(FraudDetectorService.class.getName()), order.getEmail(), order);
+            orderKafkaDispatcher.sendAndWait("ECOMMERCE_ORDER_APPROVED", message.getCorrelationId().continueWith(FraudDetectorService.class.getName()), order.getEmail(), order);
         }
 
         System.out.println("Order processed!");

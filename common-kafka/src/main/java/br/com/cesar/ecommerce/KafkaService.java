@@ -1,6 +1,8 @@
 package br.com.cesar.ecommerce;
 
+import com.google.gson.GsonBuilder;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
@@ -50,9 +52,25 @@ class KafkaService<T> implements Closeable {
                         parse.consume(record);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        sendToDeadLetter(record);
                     }
                 }
             }
+        }
+    }
+
+    private void sendToDeadLetter(ConsumerRecord<String, Message<T>> record) {
+        try (var dispatcher = new KafkaDispatcher<>()) {
+            var message = record.value();
+            dispatcher.sendAndWait("ECOMMERCE_DEADLETTER",
+                    message.getCorrelationId().continueWith("DeadLetter"),
+                    message.getCorrelationId().getId(),
+                    new GsonBuilder().create().toJson(message));
+
+        } catch (Exception ex) {
+            // if fail, finish the system
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 

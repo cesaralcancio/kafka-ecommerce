@@ -30,8 +30,8 @@ public class NewOrderMain {
 
                 Order order = new Order(index, orderId, randomEmail, amount);
 
-                orderDispatcher.send(topicNewOrder, new CorrelationId(NewOrderMain.class.getName()), randomEmail, order);
-                emailDispatcher.send(topicSendEmail, new CorrelationId(NewOrderMain.class.getName()), randomEmail, email);
+                orderDispatcher.sendAndWait(topicNewOrder, new CorrelationId(NewOrderMain.class.getName()), randomEmail, order);
+                emailDispatcher.sendAndWait(topicSendEmail, new CorrelationId(NewOrderMain.class.getName()), randomEmail, email);
             }
         }
     }

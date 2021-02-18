@@ -40,8 +40,8 @@ public class NewOrderServlet extends HttpServlet {
         Order order = new Order("1", orderId, randomEmail, amount);
 
         try {
-            orderDispatcher.send(topicNewOrder, new CorrelationId(NewOrderServlet.class.getName()), randomEmail, order);
-            emailDispatcher.send(topicSendEmail, new CorrelationId(NewOrderServlet.class.getName()), randomEmail, email);
+            orderDispatcher.sendAndWait(topicNewOrder, new CorrelationId(NewOrderServlet.class.getName()), randomEmail, order);
+            emailDispatcher.sendAndWait(topicSendEmail, new CorrelationId(NewOrderServlet.class.getName()), randomEmail, email);
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
