@@ -30,6 +30,7 @@
         <module>service-user</module>
         <module>service-http</module>
         <module>service-reading-report</module>
+        <module>service-email-new-order</module>
     </modules>
 
     <dependencies>
