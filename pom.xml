@@ -31,6 +31,7 @@
         <module>service-http</module>
         <module>service-reading-report</module>
         <module>service-email-new-order</module>
+        <module>common-database</module>
     </modules>
 
     <dependencies>

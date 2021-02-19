@@ -11,7 +11,7 @@ public class ServiceProvider<T> implements Callable<Void> {
     }
 
     @Override
-    public Void call() {
+    public Void call() throws Exception {
         var service = factory.create();
         try (var kafkaService = new KafkaService<>(service.consumerGroup(),
                 service.topic(),

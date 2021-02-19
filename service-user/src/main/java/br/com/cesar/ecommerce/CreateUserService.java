@@ -1,41 +1,39 @@
 package br.com.cesar.ecommerce;
 
-import br.com.cesar.ecommerce.consumer.KafkaService;
+import br.com.cesar.ecommerce.consumer.ConsumerService;
+import br.com.cesar.ecommerce.consumer.ServiceRunner;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
-public class CreateUserService {
+public class CreateUserService implements ConsumerService<Order> {
 
-    private final Connection connection;
+    private final LocalDatabase database;
 
     CreateUserService() throws SQLException {
-        var url = "jdbc:sqlite:service-user/target/users_database.db";
-        this.connection = DriverManager.getConnection(url);
-        try {
-            connection.createStatement().execute("create table users (" +
-                    "uuid varchar(200) primary key," +
-                    "email varchar(200))");
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        this.database = new LocalDatabase();
+        var sql = "create table users (" +
+                "uuid varchar(200) primary key," +
+                "email varchar(200))";
+        database.createIfNotExists(sql);
     }
 
     public static void main(String[] args) throws SQLException {
-        var topic = "ECOMMERCE_NEW_ORDER";
-        var createUserService = new CreateUserService();
-        try (var service = new KafkaService(CreateUserService.class.getSimpleName(),
-                topic,
-                createUserService::parse)) {
-            service.run();
-        }
+        new ServiceRunner<>(CreateUserService::new).start(3);
     }
 
-    private void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException, SQLException {
+    @Override
+    public String topic() {
+        return "ECOMMERCE_NEW_ORDER";
+    }
+
+    @Override
+    public String consumerGroup() {
+        return CreateUserService.class.getSimpleName();
+    }
+
+    public void parse(ConsumerRecord<String, Message<Order>> record) throws SQLException {
         System.out.println("Processing new order, checking for new user.");
         System.out.println("Topic: " + record.topic());
         System.out.println("Key: " + record.key());
@@ -56,17 +54,12 @@ public class CreateUserService {
 
     private void insertNewUser(String email) throws SQLException {
         String uuid = UUID.randomUUID().toString();
-        var insert = connection.prepareStatement("insert into users (uuid, email) values (?, ?) ");
-        insert.setString(1, uuid);
-        insert.setString(2, email);
-        insert.execute();
+        database.update("insert into users (uuid, email) values (?, ?) ", uuid, email);
         System.out.println("User created: " + uuid + ":::" + email);
     }
 
     private boolean exists(String email) throws SQLException {
-        var select = connection.prepareStatement("select uuid from users where email = ? limit 1");
-        select.setString(1, email);
-        var results = select.executeQuery();
+        var results = database.query("select uuid from users where email = ? limit 1", email);
         return results.next();
     }
 }

@@ -9,5 +9,5 @@ public interface ConsumerService<T> {
 
     String consumerGroup();
 
-    void parse(ConsumerRecord<String, Message<T>> record);
+    void parse(ConsumerRecord<String, Message<T>> record) throws Exception;
 }
