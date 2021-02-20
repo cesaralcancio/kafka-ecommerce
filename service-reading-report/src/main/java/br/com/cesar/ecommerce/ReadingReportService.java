@@ -22,13 +22,6 @@ public class ReadingReportService {
     }
 
     private void parse(ConsumerRecord<String, Message<User>> record) throws IOException {
-        System.out.println("Processing record for user.");
-        System.out.println("Topic: " + record.topic());
-        System.out.println("Key: " + record.key());
-        System.out.println("Value: " + record.value());
-        System.out.println("Partition: " + record.partition());
-        System.out.println("Offset: " + record.offset());
-
         var target = new File(record.value().getPayload().getReportPath());
         IO.copyTo(SOURCE, target);
         IO.append(target, "Created for " + record.value().getPayload().getUuid());

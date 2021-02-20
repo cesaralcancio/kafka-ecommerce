@@ -50,6 +50,12 @@ public class KafkaService<T> implements Closeable {
                 System.out.println("|---------------------------------------|");
                 System.out.println("Found " + records.count() + " records.");
                 for (var record : records) {
+                    System.out.println("Processing " + groupId + "...");
+                    System.out.println("Topic: " + record.topic());
+                    System.out.println("Key: " + record.key());
+                    System.out.println("Value: " + record.value());
+                    System.out.println("Partition: " + record.partition());
+                    System.out.println("Offset: " + record.offset());
                     try {
                         parse.consume(record);
                     } catch (Exception e) {

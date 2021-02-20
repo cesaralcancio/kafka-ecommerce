@@ -10,8 +10,8 @@ public class LocalDatabase {
 
     private final Connection connection;
 
-    public LocalDatabase() throws SQLException {
-        var url = "jdbc:sqlite:service-user/target/users_database.db";
+    public LocalDatabase(String fullPath) throws SQLException {
+        var url = "jdbc:sqlite:" + fullPath + ".db";
         this.connection = DriverManager.getConnection(url);
     }
 

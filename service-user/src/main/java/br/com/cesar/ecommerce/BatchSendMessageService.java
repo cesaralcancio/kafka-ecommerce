@@ -39,16 +39,8 @@ public class BatchSendMessageService {
     private KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<>();
 
     private void parse(ConsumerRecord<String, Message<String>> record) throws SQLException {
-        System.out.println("Processing new batch...");
-        System.out.println("Topic: " + record.topic());
-        System.out.println("Key: " + record.key());
-        System.out.println("Value: " + record.value());
-        System.out.println("Partition: " + record.partition());
-        System.out.println("Offset: " + record.offset());
         var message = record.value();
         var topic = message.getPayload();
-
-        if (true) throw new RuntimeException("Forcei erro");
 
         for (User user : findAll()) {
             userDispatcher.sendAsync(topic,

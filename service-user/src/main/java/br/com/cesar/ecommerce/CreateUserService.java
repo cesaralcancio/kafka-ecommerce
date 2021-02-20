@@ -12,7 +12,7 @@ public class CreateUserService implements ConsumerService<Order> {
     private final LocalDatabase database;
 
     CreateUserService() throws SQLException {
-        this.database = new LocalDatabase();
+        this.database = new LocalDatabase("service-user/target/users_database");
         var sql = "create table users (" +
                 "uuid varchar(200) primary key," +
                 "email varchar(200))";
@@ -20,7 +20,7 @@ public class CreateUserService implements ConsumerService<Order> {
     }
 
     public static void main(String[] args) throws SQLException {
-        new ServiceRunner<>(CreateUserService::new).start(3);
+        new ServiceRunner<>(CreateUserService::new).start(1);
     }
 
     @Override
@@ -34,12 +34,6 @@ public class CreateUserService implements ConsumerService<Order> {
     }
 
     public void parse(ConsumerRecord<String, Message<Order>> record) throws SQLException {
-        System.out.println("Processing new order, checking for new user.");
-        System.out.println("Topic: " + record.topic());
-        System.out.println("Key: " + record.key());
-        System.out.println("Value: " + record.value());
-        System.out.println("Partition: " + record.partition());
-        System.out.println("Offset: " + record.offset());
         var message = record.value();
         var order = message.getPayload();
 

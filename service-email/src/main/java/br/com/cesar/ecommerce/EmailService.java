@@ -21,13 +21,6 @@ public class EmailService implements ConsumerService<Email> {
     }
 
     public void parse(ConsumerRecord<String, Message<Email>> record) {
-        System.out.println("Sending email...");
-        System.out.println("Topic: " + record.topic());
-        System.out.println("Key: " + record.key());
-        System.out.println("Value: " + record.value());
-        System.out.println("Partition: " + record.partition());
-        System.out.println("Offset: " + record.offset());
-
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

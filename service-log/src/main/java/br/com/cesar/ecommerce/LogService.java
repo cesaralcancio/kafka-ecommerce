@@ -24,17 +24,6 @@ public class LogService {
     }
 
     private void parse(ConsumerRecord<String, Message<String>> record) {
-        System.out.println("Logging...");
-        System.out.println("Topic: " + record.topic());
-        System.out.println("Key: " + record.key());
-        System.out.println("Value: " + record.value());
-        System.out.println("Partition: " + record.partition());
-        System.out.println("Offset: " + record.offset());
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        System.out.println("Log processed!");
     }
 }
